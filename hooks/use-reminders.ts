@@ -23,21 +23,25 @@ export function useReminders() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fire browser notification when a booking enters the 48h window
+  // Fire browser notification when a booking enters the 48h window (once per booking)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (Notification.permission !== 'granted') return;
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
     bookings
-      .filter((b) => !b.reminderSent && isWithinNext48Hours(b.eventDateTime) && b.status === 'upcoming')
+      .filter((b) => isWithinNext48Hours(b.eventDateTime) && b.status === 'upcoming')
       .forEach((b) => {
+        const key = `mahalaxmi:reminder:${b.id}`;
+        if (localStorage.getItem(key)) return;
         const hours = Math.round((b.eventDateTime - now) / (1000 * 60 * 60));
         const n = new Notification('Mahalaxmi — Upcoming Booking', {
           body: `${b.customerName} — ${b.serviceName} in ${hours}h on ${new Date(b.eventDateTime).toLocaleString('en-IN')}`,
         });
         setTimeout(() => n.close(), 8000);
-        setReminderSent(b.id).catch(() => {});
+        localStorage.setItem(key, '1');
+        if (!b.reminderSent) {
+          setReminderSent(b.id).catch(() => {});
+        }
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookings, now]);
 
   const requestNotificationPermission = useCallback(async () => {

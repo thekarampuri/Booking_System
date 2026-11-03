@@ -12,6 +12,8 @@ import {
   signOut,
   onAuthStateChanged,
   updatePassword,
+  setPersistence,
+  browserLocalPersistence,
   type User,
 } from 'firebase/auth';
 import { auth, ADMIN_EMAIL, isConfigured } from '@/lib/firebase';
@@ -36,15 +38,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       return;
     }
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
+    let unsub = () => {};
+    setPersistence(auth, browserLocalPersistence)
+      .catch(() => undefined)
+      .finally(() => {
+        if (!auth) {
+          setLoading(false);
+          return;
+        }
+        unsub = onAuthStateChanged(auth, (u) => {
+          setUser(u);
+          setLoading(false);
+        });
+      });
     return () => unsub();
   }, []);
 
   const login = async (username: string, password: string) => {
-    if (!auth) throw new Error('Firebase is not configured. Add your credentials to .env.local');
+    if (!auth) {
+      throw new Error('Firebase is not configured. Add your credentials to .env.local');
+    }
     const cleanUser = username.trim().toLowerCase();
     const email = cleanUser === 'admin' ? ADMIN_EMAIL : `${cleanUser}@mahalaxmi.com`;
     await signInWithEmailAndPassword(auth, email, password);

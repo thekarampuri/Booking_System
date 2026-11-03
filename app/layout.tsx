@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import { AuthProvider } from '@/components/providers/auth-provider';
+import { AuthGuard } from '@/components/providers/auth-guard';
 import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({
@@ -41,7 +42,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         <AuthProvider>
-          {children}
+          <AuthGuard>{children}</AuthGuard>
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </body>

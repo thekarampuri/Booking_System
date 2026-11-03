@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -98,13 +98,16 @@ export function BookingForm({ booking, prefillDate, mode }: BookingFormProps) {
         balanceAmount: balance,
       };
       if (mode === 'create') {
-        await createBooking(payload);
+        const id = await createBooking(payload);
         toast.success('Booking created successfully.');
-      } else if (booking) {
+        router.push(`/bookings/${id}`);
+        return;
+      }
+      if (booking) {
         await updateBooking(booking.id, payload);
         toast.success('Booking updated successfully.');
+        router.push(`/bookings/${booking.id}`);
       }
-      router.push('/bookings/' + (booking?.id ?? ''));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to save booking.');
     } finally {

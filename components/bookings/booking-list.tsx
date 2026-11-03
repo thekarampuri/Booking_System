@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, X } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
-import { BookingCard } from '@/components/booking-card';
+import { BookingCard } from '@/components/bookings/booking-card';
 import { BookingCardSkeleton, Skeleton } from '@/components/ui/skeletons';
 import { SERVICE_TYPES, OCCASION_TYPES, type Booking } from '@/types/booking';
 

@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Sparkles, LogIn, Loader2, Eye, EyeOff, User, Lock } from 'lucide-react';
+import { LogIn, Loader2, Eye, EyeOff, User, Lock } from 'lucide-react';
 import { useAuth } from '@/components/providers/auth-provider';
+import { BrandLogo } from '@/components/layout/brand-logo';
 import { toast } from 'sonner';
 
 const schema = z.object({
@@ -54,8 +55,8 @@ export default function LoginPage() {
 
       <div className="glass-strong relative z-10 w-full max-w-md rounded-3xl p-8 sm:p-10 animate-scale-in">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-maroon to-maroon-700 shadow-lg shadow-maroon/30">
-            <Sparkles className="h-8 w-8 text-gold-200" />
+          <div className="mx-auto mb-4 w-fit">
+            <BrandLogo size="lg" />
           </div>
           <h1 className="font-serif text-2xl font-bold text-maroon">
             Mahalaxmi Beauty Salon

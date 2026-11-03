@@ -19,9 +19,7 @@ import { StatCard } from '@/components/ui/stat-card';
 import { StatCardSkeleton } from '@/components/ui/skeletons';
 import { useBookings } from '@/hooks/use-bookings';
 import { useReminders } from '@/hooks/use-reminders';
-import { formatINR, formatDateLong, formatTime, countdownLabel } from '@/utils/format';
-import { isWithinNext48Hours, monthLabel } from '@/utils/format';
-import type { Booking } from '@/types/booking';
+import { formatINR, formatDateLong, formatTime, countdownLabel, monthLabel } from '@/utils/format';
 import {
   startOfMonth,
   endOfMonth,
@@ -39,8 +37,10 @@ export default function DashboardPage() {
     const monthStart = startOfMonth(now);
     const monthEnd = endOfMonth(now);
 
-    const upcoming = bookings.filter((b) => b.status === 'upcoming' && b.eventDateTime > Date.now());
-    const past = bookings.filter((b) => b.status === 'completed' || (b.status !== 'cancelled' && b.eventDateTime < Date.now()));
+    const upcoming = bookings.filter((b) => b.status === 'upcoming' && b.eventDateTime >= Date.now());
+    const past = bookings.filter(
+      (b) => b.eventDateTime < Date.now() || b.status === 'completed' || b.status === 'cancelled',
+    );
 
     const bookingsThisMonth = bookings.filter((b) => {
       if (b.status === 'cancelled') return false;

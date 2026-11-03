@@ -4,6 +4,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  getDoc,
   onSnapshot,
   query,
   orderBy,
@@ -14,17 +15,18 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Booking, BookingInput } from '@/types/booking';
+import type { Booking, BookingInput, BookingStatus } from '@/types/booking';
 import { combineDateAndTime } from '@/utils/format';
 
 const COLLECTION = 'bookings';
 
 function normalize(data: DocumentData, id: string): Booking {
-  const eventDateTime = data.eventDateTime instanceof Timestamp
-    ? data.eventDateTime.toMillis()
-    : typeof data.eventDateTime === 'number'
-      ? data.eventDateTime
-      : 0;
+  const eventDateTime =
+    data.eventDateTime instanceof Timestamp
+      ? data.eventDateTime.toMillis()
+      : typeof data.eventDateTime === 'number'
+        ? data.eventDateTime
+        : 0;
 
   return {
     id,
@@ -65,7 +67,7 @@ export function subscribeToBookings(
 }
 
 export function subscribeToBookingsByStatus(
-  status: 'upcoming' | 'completed' | 'cancelled',
+  status: BookingStatus,
   cb: (bookings: Booking[]) => void,
   onError?: (err: Error) => void,
 ): Unsubscribe {
@@ -86,7 +88,7 @@ export function subscribeToBookingsByStatus(
 }
 
 export async function createBooking(input: BookingInput): Promise<string> {
-  if (!db) throw new Error('Database not initialized.');
+  if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   const payload = {
     ...input,
     eventDateTime: Timestamp.fromMillis(combineDateAndTime(input.occasionDate, input.time)),
@@ -99,46 +101,41 @@ export async function createBooking(input: BookingInput): Promise<string> {
 }
 
 export async function updateBooking(id: string, input: Partial<BookingInput>): Promise<void> {
-  if (!db) throw new Error('Database not initialized.');
+  if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   const update: Record<string, unknown> = { ...input, updatedAt: serverTimestamp() };
   if (input.occasionDate && input.time) {
-    update.eventDateTime = Timestamp.fromMillis(combineDateAndTime(input.occasionDate, input.time));
+    update.eventDateTime = Timestamp.fromMillis(
+      combineDateAndTime(input.occasionDate, input.time),
+    );
   }
-  await updateDoc(doc(db, COLLECTION, id), update);
+  await updateDoc(doc(db, COLLECTION, id), update as Parameters<typeof updateDoc>[1]);
 }
 
 export async function updateBookingStatus(id: string, status: Booking['status']): Promise<void> {
-  if (!db) throw new Error('Database not initialized.');
+  if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   await updateDoc(doc(db, COLLECTION, id), { status, updatedAt: serverTimestamp() });
 }
 
 export async function setReminderSent(id: string): Promise<void> {
-  if (!db) throw new Error('Database not initialized.');
-  await updateDoc(doc(db, COLLECTION, id), { reminderSent: true });
+  if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
+  await updateDoc(doc(db, COLLECTION, id), {
+    reminderSent: true,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 export async function deleteBooking(id: string): Promise<void> {
-  if (!db) throw new Error('Database not initialized.');
+  if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   await deleteDoc(doc(db, COLLECTION, id));
 }
 
 export async function getBookingById(id: string): Promise<Booking | null> {
   if (!db) return null;
-  return new Promise((resolve, reject) => {
-    const unsub = onSnapshot(
-      doc(db, COLLECTION, id),
-      (snap) => {
-        if (!snap.exists()) {
-          resolve(null);
-        } else {
-          resolve(normalize(snap.data(), snap.id));
-        }
-        unsub();
-      },
-      (err) => {
-        reject(err);
-        unsub();
-      },
-    );
-  });
+  try {
+    const snap = await getDoc(doc(db, COLLECTION, id));
+    if (!snap.exists()) return null;
+    return normalize(snap.data(), snap.id);
+  } catch (err) {
+    throw err instanceof Error ? err : new Error('Failed to load booking.');
+  }
 }

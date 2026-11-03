@@ -2,11 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Sparkles, LogOut, Settings, Bell, Menu, X } from 'lucide-react';
+import { LogOut, Settings, Bell, Menu, X } from 'lucide-react';
 import { useAuth } from '@/components/providers/auth-provider';
 import { useReminders } from '@/hooks/use-reminders';
 import { countdownLabel } from '@/utils/format';
 import { cn } from '@/lib/utils';
+import { BrandLogo } from '@/components/layout/brand-logo';
 import Link from 'next/link';
 
 export function Header() {
@@ -30,17 +31,7 @@ export function Header() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           {/* Logo + Title */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-maroon to-maroon-700 shadow-md shadow-maroon/30">
-              <img
-                src="/logo.png"
-                alt="Mahalaxmi"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-              <Sparkles className="absolute h-5 w-5 text-gold-200" />
-            </div>
+            <BrandLogo size="sm" />
             <div className="hidden sm:block">
               <h1 className="font-serif text-base font-bold leading-tight text-maroon">
                 Mahalaxmi Beauty Salon
@@ -94,17 +85,20 @@ export function Header() {
                     ) : (
                       <ul className="space-y-2 max-h-80 overflow-auto">
                         {reminders.map((b) => (
-                          <li
-                            key={b.id}
-                            className="flex items-center justify-between rounded-xl bg-gold-50/60 border border-gold-200/40 px-3 py-2"
-                          >
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-medium text-maroon">{b.customerName}</p>
-                              <p className="text-xs text-muted-foreground">{b.serviceName}</p>
-                            </div>
-                            <span className="shrink-0 rounded-full bg-gold-400/20 px-2 py-1 text-xs font-semibold text-gold-700">
-                              {countdownLabel(b.eventDateTime)}
-                            </span>
+                          <li key={b.id}>
+                            <Link
+                              href={`/bookings/${b.id}`}
+                              onClick={() => setBellOpen(false)}
+                              className="flex items-center justify-between rounded-xl bg-gold-50/60 border border-gold-200/40 px-3 py-2 transition hover:bg-gold-50"
+                            >
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-maroon">{b.customerName}</p>
+                                <p className="text-xs text-muted-foreground">{b.serviceName}</p>
+                              </div>
+                              <span className="shrink-0 rounded-full bg-gold-400/20 px-2 py-1 text-xs font-semibold text-gold-700">
+                                {countdownLabel(b.eventDateTime)}
+                              </span>
+                            </Link>
                           </li>
                         ))}
                       </ul>

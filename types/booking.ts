@@ -50,7 +50,10 @@ export interface Booking {
   updatedAt: number;
 }
 
-export type BookingInput = Omit<Booking, 'id' | 'createdAt' | 'updatedAt' | 'balanceAmount' | 'reminderSent'> & {
+export type BookingInput = Omit<
+  Booking,
+  'id' | 'createdAt' | 'updatedAt' | 'balanceAmount' | 'reminderSent' | 'eventDateTime'
+> & {
   balanceAmount: number;
 };
 

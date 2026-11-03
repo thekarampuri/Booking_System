@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { BookingCard } from '@/components/booking-card';
+import { BookingCard } from '@/components/bookings/booking-card';
 import Link from 'next/link';
 import type { Booking } from '@/types/booking';
 

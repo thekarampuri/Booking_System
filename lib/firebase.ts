@@ -11,7 +11,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-function isConfigured(): boolean {
+export function isConfigured(): boolean {
   return Boolean(
     firebaseConfig.apiKey &&
       firebaseConfig.projectId &&
@@ -24,11 +24,17 @@ let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
 
-if (isConfigured() && typeof window !== 'undefined') {
+function ensureClient(): void {
+  if (typeof window === 'undefined') return;
+  if (!isConfigured()) return;
+  if (app) return;
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
 }
 
-export { app, auth, db, isConfigured };
+ensureClient();
+
+export { app, auth, db };
 export const ADMIN_EMAIL = 'admin@mahalaxmi.com';
+export const ADMIN_USERNAME = 'admin';

@@ -6,17 +6,19 @@ import {
   endOfMonth,
   startOfWeek,
   endOfWeek,
+  startOfDay,
+  endOfDay,
   eachDayOfInterval,
-  isSameDay,
   isSameMonth,
   isToday,
   format,
   addMonths,
+  addHours,
 } from 'date-fns';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { cn } from '@/lib/utils';
-import { isWithinNext48Hours, formatTime } from '@/utils/format';
+import { formatTime } from '@/utils/format';
 import type { Booking } from '@/types/booking';
 
 interface CalendarGridProps {
@@ -43,7 +45,6 @@ export function CalendarGrid({ bookings, onSelectDate, initialDate }: CalendarGr
   const bookingsByDay = useMemo(() => {
     const map = new Map<string, Booking[]>();
     for (const b of bookings) {
-      if (b.status === 'cancelled' && false) continue;
       const key = b.occasionDate;
       const arr = map.get(key) ?? [];
       arr.push(b);
@@ -119,7 +120,11 @@ export function CalendarGrid({ bookings, onSelectDate, initialDate }: CalendarGr
           const dayBookings = bookingsByDay.get(key) ?? [];
           const inMonth = isSameMonth(day, currentDate);
           const today = isToday(day);
-          const isReminder = isWithinNext48Hours(day.getTime());
+          const now = new Date();
+          const isReminder =
+            inMonth &&
+            endOfDay(day).getTime() >= now.getTime() &&
+            startOfDay(day).getTime() <= addHours(now, 48).getTime();
           const multi = dayBookings.length >= 2;
 
           return (

@@ -15,7 +15,6 @@ import {
   Phone,
   IndianRupee,
   User,
-  FileText,
   Sparkles,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/app-shell';
@@ -252,7 +251,7 @@ function Receipt({ booking }: { booking: Booking }) {
           <Row label="Time" value={formatTime(booking.time)} />
           <Row label="Address" value={booking.address} />
           {booking.phone && <Row label="Phone" value={booking.phone} />}
-          <Row label="Status" value={booking.status} />}
+          <Row label="Status" value={booking.status} />
         </tbody>
       </table>
 
