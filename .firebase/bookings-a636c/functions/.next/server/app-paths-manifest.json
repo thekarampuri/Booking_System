@@ -1,0 +1,13 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/bookings/[id]/page": "app/bookings/[id]/page.js",
+  "/bookings/[id]/edit/page": "app/bookings/[id]/edit/page.js",
+  "/bookings/new/page": "app/bookings/new/page.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/bookings/upcoming/page": "app/bookings/upcoming/page.js",
+  "/bookings/previous/page": "app/bookings/previous/page.js",
+  "/login/page": "app/login/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/page": "app/page.js",
+  "/api/cron/reminders/route": "app/api/cron/reminders/route.js"
+}

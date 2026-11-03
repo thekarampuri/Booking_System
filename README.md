@@ -99,7 +99,34 @@ npm run build
 
 ---
 
-## 4. Deploy on Vercel
+## 4. Deploy to Firebase Hosting (Live)
+
+Your project is configured with Firebase Web Frameworks for Next.js App Router support:
+
+1. **Login to Firebase CLI:**
+   ```bash
+   npx firebase login
+   ```
+   *(This opens a browser window for Google authentication with the account that owns `bookings-a636c`)*
+
+2. **Deploy rules, indexes, and web app:**
+   ```bash
+   npm run deploy
+   ```
+   Or deploy hosting only:
+   ```bash
+   npm run deploy:hosting
+   ```
+
+3. **Your Live URL:**
+   - `https://bookings-a636c.web.app`
+   - `https://bookings-a636c.firebaseapp.com`
+
+> **Note on Firebase Plans:** Firebase Hosting for Next.js App Router utilizes Cloud Functions for server routes, which requires the **Blaze (Pay-As-You-Go)** plan (free tier includes 2 million requests/month). If you are on the free Spark plan, enable Blaze in your Firebase Console under **Usage and billing**.
+
+---
+
+## 5. Deploy on Vercel (Alternative)
 
 1. Push this repository to GitHub (or import the folder in Vercel).
 2. Create a Vercel project from the repo. Framework preset: **Next.js**.

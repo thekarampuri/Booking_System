@@ -4,18 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ArrowLeft,
-  Pencil,
-  Trash2,
-  CheckCircle2,
-  Printer,
-  CalendarDays,
-  Clock,
-  MapPin,
-  Phone,
-  IndianRupee,
-  User,
-  Sparkles,
+  ArrowLeft, Pencil, Trash2, CheckCircle2, Printer,
+  CalendarDays, Clock, MapPin, Phone, IndianRupee, User, Sparkles,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/app-shell';
 import { GlassCard } from '@/components/ui/glass-card';
@@ -35,11 +25,10 @@ export default function BookingDetailPage() {
 
   useEffect(() => {
     if (!params.id) return;
-    const unsub = getBookingById(params.id).then((b) => {
+    getBookingById(params.id).then((b) => {
       setBooking(b);
       setLoading(false);
     });
-    return () => { void unsub; };
   }, [params.id]);
 
   const handleDelete = async () => {
@@ -102,7 +91,6 @@ export default function BookingDetailPage() {
           <ArrowLeft className="h-4 w-4" /> Back
         </button>
 
-        {/* Header */}
         <GlassCard variant="strong" className="mb-6 p-6 animate-fade-in">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -145,7 +133,6 @@ export default function BookingDetailPage() {
           </div>
         </GlassCard>
 
-        {/* Details */}
         <div className="grid gap-4 sm:grid-cols-2">
           <GlassCard className="p-5">
             <h3 className="mb-3 font-serif text-base font-semibold text-maroon">Event Details</h3>
@@ -155,7 +142,6 @@ export default function BookingDetailPage() {
             <DetailRow icon={<CalendarDays className="h-4 w-4" />} label="Occasion Type" value={booking.occasionType} />
             <DetailRow icon={<MapPin className="h-4 w-4" />} label="Address" value={booking.address} />
           </GlassCard>
-
           <GlassCard className="p-5">
             <h3 className="mb-3 font-serif text-base font-semibold text-maroon">Contact & Payment</h3>
             <DetailRow icon={<User className="h-4 w-4" />} label="Customer" value={booking.customerName} />
@@ -180,42 +166,26 @@ export default function BookingDetailPage() {
         </GlassCard>
       </div>
 
-      {/* Printable receipt */}
       <div className="printable hidden">
         <Receipt booking={booking} />
       </div>
 
-      <ConfirmDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
+      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen}
         title="Delete Booking"
         description={`Are you sure you want to delete the booking for ${booking.customerName}? This action cannot be undone.`}
-        confirmLabel="Delete"
-        destructive
-        onConfirm={handleDelete}
+        confirmLabel="Delete" destructive onConfirm={handleDelete}
       />
-      <ConfirmDialog
-        open={completeOpen}
-        onOpenChange={setCompleteOpen}
+      <ConfirmDialog open={completeOpen} onOpenChange={setCompleteOpen}
         title="Mark as Completed"
         description="This will change the booking status to completed. You can still edit it later."
-        confirmLabel="Mark Complete"
-        onConfirm={handleComplete}
+        confirmLabel="Mark Complete" onConfirm={handleComplete}
       />
     </AppShell>
   );
 }
 
-function DetailRow({
-  icon,
-  label,
-  value,
-  highlight,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  highlight?: boolean;
+function DetailRow({ icon, label, value, highlight }: {
+  icon: React.ReactNode; label: string; value: string; highlight?: boolean;
 }) {
   return (
     <div className="flex items-start gap-2 py-1.5">
@@ -241,40 +211,29 @@ function Receipt({ booking }: { booking: Booking }) {
         </div>
         <p className="text-xs text-gray-500">{formatDateTime(booking.createdAt)}</p>
       </div>
-
-      <table className="w-full text-sm">
-        <tbody>
-          <Row label="Customer Name" value={booking.customerName} />
-          <Row label="Service" value={booking.serviceName} />
-          <Row label="Occasion Type" value={booking.occasionType} />
-          <Row label="Occasion Date" value={formatDateLong(booking.occasionDate)} />
-          <Row label="Time" value={formatTime(booking.time)} />
-          <Row label="Address" value={booking.address} />
-          {booking.phone && <Row label="Phone" value={booking.phone} />}
-          <Row label="Status" value={booking.status} />
-        </tbody>
-      </table>
-
+      <table className="w-full text-sm"><tbody>
+        <Row label="Customer Name" value={booking.customerName} />
+        <Row label="Service" value={booking.serviceName} />
+        <Row label="Occasion Type" value={booking.occasionType} />
+        <Row label="Occasion Date" value={formatDateLong(booking.occasionDate)} />
+        <Row label="Time" value={formatTime(booking.time)} />
+        <Row label="Address" value={booking.address} />
+        {booking.phone && <Row label="Phone" value={booking.phone} />}
+      </tbody></table>
       <div className="mt-6 border-t-2 border-maroon pt-4">
-        <table className="w-full text-sm">
-          <tbody>
-            <Row label="Total Amount" value={formatINR(booking.totalAmount)} />
-            <Row label="Advance Paid" value={formatINR(booking.advanceAmount)} />
-            <Row label="Balance Due" value={formatINR(booking.balanceAmount)} bold />
-          </tbody>
-        </table>
+        <table className="w-full text-sm"><tbody>
+          <Row label="Total Amount" value={formatINR(booking.totalAmount)} />
+          <Row label="Advance Paid" value={formatINR(booking.advanceAmount)} />
+          <Row label="Balance Due" value={formatINR(booking.balanceAmount)} bold />
+        </tbody></table>
       </div>
-
       {booking.notes && (
         <div className="mt-4 border-t border-gray-200 pt-4">
           <p className="text-xs text-gray-500">Notes</p>
           <p className="text-sm">{booking.notes}</p>
         </div>
       )}
-
-      <p className="mt-8 text-center text-xs text-gray-400">
-        Thank you for choosing Mahalaxmi Beauty Salon & Academy!
-      </p>
+      <p className="mt-8 text-center text-xs text-gray-400">Thank you for choosing Mahalaxmi Beauty Salon & Academy!</p>
     </div>
   );
 }

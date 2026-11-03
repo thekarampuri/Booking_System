@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 
+node_modules/
 # testing
 /coverage
 
@@ -34,3 +35,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Firebase service account keys
+serviceAccountKey.json
+*serviceAccount*.json
