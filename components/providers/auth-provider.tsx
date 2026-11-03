@@ -9,6 +9,7 @@ import {
 } from 'react';
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   updatePassword,
@@ -60,7 +61,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const cleanUser = username.trim().toLowerCase();
     const email = cleanUser === 'admin' ? ADMIN_EMAIL : `${cleanUser}@mahalaxmi.com`;
-    await signInWithEmailAndPassword(auth, email, password);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err: unknown) {
+      const authErr = err as { code?: string; message?: string };
+      // Seamless first-time setup: if admin user hasn't been created yet and user signs in with default credentials
+      if (
+        cleanUser === 'admin' &&
+        password === '12345678' &&
+        (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential')
+      ) {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          return;
+        } catch {
+          // If creation fails (e.g. user already existed), throw original error
+          throw err;
+        }
+      }
+      throw err;
+    }
   };
 
   const logout = async () => {

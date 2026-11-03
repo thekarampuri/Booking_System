@@ -108,7 +108,7 @@ export async function updateBooking(id: string, input: Partial<BookingInput>): P
       combineDateAndTime(input.occasionDate, input.time),
     );
   }
-  await updateDoc(doc(db, COLLECTION, id), update as Parameters<typeof updateDoc>[1]);
+  await updateDoc(doc(db, COLLECTION, id), update as { [x: string]: any });
 }
 
 export async function updateBookingStatus(id: string, status: Booking['status']): Promise<void> {
