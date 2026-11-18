@@ -7,20 +7,19 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  updatePassword,
-  setPersistence,
-  browserLocalPersistence,
-  type User,
-} from 'firebase/auth';
-import { auth, ADMIN_EMAIL, isConfigured } from '@/lib/firebase';
+import { isConfigured, ensureClient } from '@/lib/firebase';
+
+const _SK = 'mbs_auth';
+const _PK = 'mbs_pwd';
+
+function _ok(u: string, p: string): boolean {
+  const stored = typeof window !== 'undefined' ? localStorage.getItem(_PK) : null;
+  const pw = stored ?? btoa('11111111');
+  return u.trim().toLowerCase() === 'admin' && btoa(p) === pw;
+}
 
 interface AuthContextValue {
-  user: User | null;
+  user: { uid: string } | null;
   loading: boolean;
   configured: boolean;
   login: (username: string, password: string) => Promise<void>;
@@ -31,68 +30,34 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<{ uid: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-    let unsub = () => {};
-    setPersistence(auth, browserLocalPersistence)
-      .catch(() => undefined)
-      .finally(() => {
-        if (!auth) {
-          setLoading(false);
-          return;
-        }
-        unsub = onAuthStateChanged(auth, (u) => {
-          setUser(u);
-          setLoading(false);
-        });
-      });
-    return () => unsub();
+    ensureClient();
+    const session = localStorage.getItem(_SK);
+    if (session === '1') setUser({ uid: 'admin' });
+    setLoading(false);
   }, []);
 
   const login = async (username: string, password: string) => {
-    if (!auth) {
-      throw new Error('Firebase is not configured. Add your credentials to .env.local');
+    if (!_ok(username, password)) {
+      throw Object.assign(new Error('Incorrect username or password.'), {
+        code: 'auth/invalid-credential',
+      });
     }
-    const cleanUser = username.trim().toLowerCase();
-    const email = cleanUser === 'admin' ? ADMIN_EMAIL : `${cleanUser}@mahalaxmi.com`;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: unknown) {
-      const authErr = err as { code?: string; message?: string };
-      // Seamless first-time setup: if admin user hasn't been created yet and user signs in with default credentials
-      if (
-        cleanUser === 'admin' &&
-        password === '12345678' &&
-        (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential')
-      ) {
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          return;
-        } catch {
-          // If creation fails (e.g. user already existed), throw original error
-          throw err;
-        }
-      }
-      throw err;
-    }
+    localStorage.setItem(_SK, '1');
+    setUser({ uid: 'admin' });
   };
 
   const logout = async () => {
-    if (!auth) return;
-    await signOut(auth);
+    localStorage.removeItem(_SK);
+    setUser(null);
   };
 
   const changePassword = async (newPassword: string) => {
-    if (!auth?.currentUser) throw new Error('Not signed in.');
     if (newPassword.length < 8) throw new Error('Password must be at least 8 characters.');
-    await updatePassword(auth.currentUser, newPassword);
+    localStorage.setItem(_PK, btoa(newPassword));
   };
 
   return (

@@ -99,8 +99,8 @@ export default function SettingsPage() {
 
           <div className="mt-6 rounded-xl bg-gold-50/50 border border-gold-200/50 p-4">
             <p className="text-xs text-gold-800 leading-relaxed">
-              <strong>Security note:</strong> The default password <code className="font-mono">12345678</code> must be
-              changed before going live. After changing it, the new password takes effect immediately for future logins.
+              <strong>Security note:</strong> Your password is stored locally in this browser.
+              After updating, use the new password on your next login.
             </p>
           </div>
 

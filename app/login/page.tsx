@@ -37,11 +37,7 @@ export default function LoginPage() {
       router.push('/');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Login failed';
-      if (msg.includes('auth/invalid-credential') || msg.includes('auth/wrong-password') || msg.includes('auth/user-not-found')) {
-        toast.error('Incorrect username or password. Please try again.');
-      } else {
-        toast.error(msg);
-      }
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -127,10 +123,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Default credentials — username <span className="font-semibold text-maroon">admin</span>, password{' '}
-          <span className="font-semibold text-maroon">12345678</span>
-        </p>
       </div>
     </div>
   );
