@@ -17,6 +17,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { GlassCard } from '@/components/ui/glass-card';
 import { StatCard } from '@/components/ui/stat-card';
 import { StatCardSkeleton } from '@/components/ui/skeletons';
+import { MonthlyRevenueChart } from '@/components/dashboard/monthly-revenue-chart';
 import { useBookings } from '@/hooks/use-bookings';
 import { useReminders } from '@/hooks/use-reminders';
 import { formatINR, formatDateLong, formatTime, countdownLabel, monthLabel } from '@/utils/format';
@@ -178,6 +179,11 @@ export default function DashboardPage() {
             />
           </>
         )}
+      </div>
+
+      {/* Monthly Revenue & Advance Collection Section */}
+      <div className="mb-8">
+        <MonthlyRevenueChart bookings={bookings} />
       </div>
 
       {/* Reminders */}
