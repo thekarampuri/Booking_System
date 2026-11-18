@@ -14,11 +14,15 @@ import {
   type DocumentData,
   type Unsubscribe,
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db as staticDb, getDb } from './firebase';
 import type { Booking, BookingInput, BookingStatus } from '@/types/booking';
 import { combineDateAndTime } from '@/utils/format';
 
 const COLLECTION = 'bookings';
+
+function getActiveDb() {
+  return getDb() || staticDb;
+}
 
 function normalize(data: DocumentData, id: string): Booking {
   const eventDateTime =
@@ -54,6 +58,7 @@ export function subscribeToBookings(
   cb: (bookings: Booking[]) => void,
   onError?: (err: Error) => void,
 ): Unsubscribe {
+  const db = getActiveDb();
   if (!db) {
     cb([]);
     return () => {};
@@ -71,6 +76,7 @@ export function subscribeToBookingsByStatus(
   cb: (bookings: Booking[]) => void,
   onError?: (err: Error) => void,
 ): Unsubscribe {
+  const db = getActiveDb();
   if (!db) {
     cb([]);
     return () => {};
@@ -88,6 +94,7 @@ export function subscribeToBookingsByStatus(
 }
 
 export async function createBooking(input: BookingInput): Promise<string> {
+  const db = getActiveDb();
   if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   const payload = {
     ...input,
@@ -101,6 +108,7 @@ export async function createBooking(input: BookingInput): Promise<string> {
 }
 
 export async function updateBooking(id: string, input: Partial<BookingInput>): Promise<void> {
+  const db = getActiveDb();
   if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   const update: Record<string, unknown> = { ...input, updatedAt: serverTimestamp() };
   if (input.occasionDate && input.time) {
@@ -112,11 +120,13 @@ export async function updateBooking(id: string, input: Partial<BookingInput>): P
 }
 
 export async function updateBookingStatus(id: string, status: Booking['status']): Promise<void> {
+  const db = getActiveDb();
   if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   await updateDoc(doc(db, COLLECTION, id), { status, updatedAt: serverTimestamp() });
 }
 
 export async function setReminderSent(id: string): Promise<void> {
+  const db = getActiveDb();
   if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   await updateDoc(doc(db, COLLECTION, id), {
     reminderSent: true,
@@ -125,11 +135,13 @@ export async function setReminderSent(id: string): Promise<void> {
 }
 
 export async function deleteBooking(id: string): Promise<void> {
+  const db = getActiveDb();
   if (!db) throw new Error('Database not initialized. Check your Firebase configuration.');
   await deleteDoc(doc(db, COLLECTION, id));
 }
 
 export async function getBookingById(id: string): Promise<Booking | null> {
+  const db = getActiveDb();
   if (!db) return null;
   try {
     const snap = await getDoc(doc(db, COLLECTION, id));
