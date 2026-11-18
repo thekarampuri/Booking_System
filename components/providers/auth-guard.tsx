@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/auth-provider';
 import { Loader2 } from 'lucide-react';
@@ -11,7 +11,12 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isLogin = pathname === '/login';
 
+  // Prevent SSR/hydration mismatch: don't render auth-dependent UI until mounted
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
+    if (!mounted) return;
     if (loading) return;
     if (!configured) return;
     if (!user && !isLogin) {
@@ -20,7 +25,16 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     if (user && isLogin) {
       router.replace('/');
     }
-  }, [user, loading, pathname, router, configured, isLogin]);
+  }, [user, loading, pathname, router, configured, isLogin, mounted]);
+
+  // Show nothing (not blank — body bg still shows) until client mounts
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin" style={{ color: '#7F1740' }} />
+      </div>
+    );
+  }
 
   if (!configured) {
     return (
@@ -45,7 +59,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-maroon" />
+        <Loader2 className="h-10 w-10 animate-spin" style={{ color: '#7F1740' }} />
       </div>
     );
   }

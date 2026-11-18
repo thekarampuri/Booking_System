@@ -25,7 +25,10 @@ export async function GET(request: NextRequest) {
   }
 
   const now = Date.now();
-  const windowStart = now + 47 * 60 * 60 * 1000;
+  // Daily job at 9 AM IST: scan all bookings in the next 48 hours that haven't been reminded yet.
+  // Using a 25-hour look-ahead from now ensures overlap between consecutive daily runs,
+  // so no booking is missed even if the cron fires slightly early or late.
+  const windowStart = now;
   const windowEnd = now + 48 * 60 * 60 * 1000;
 
   try {
