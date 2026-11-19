@@ -8,6 +8,7 @@ import { useReminders } from '@/hooks/use-reminders';
 import { countdownLabel } from '@/utils/format';
 import { cn } from '@/lib/utils';
 import { BrandLogo } from '@/components/layout/brand-logo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import Link from 'next/link';
 
 export function Header() {
@@ -108,10 +109,13 @@ export function Header() {
               )}
             </div>
 
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Settings */}
             <button
               onClick={() => router.push('/settings')}
-              className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-maroon/5 text-maroon transition hover:bg-maroon/10"
+              className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-maroon/5 text-maroon transition hover:bg-maroon/10 dark:bg-gold-500/10 dark:text-gold-400 dark:hover:bg-gold-500/20"
               aria-label="Settings"
             >
               <Settings className="h-5 w-5" />
@@ -123,7 +127,7 @@ export function Header() {
                 await logout();
                 router.push('/login');
               }}
-              className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-maroon/5 text-maroon transition hover:bg-maroon/10"
+              className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-maroon/5 text-maroon transition hover:bg-maroon/10 dark:bg-gold-500/10 dark:text-gold-400 dark:hover:bg-gold-500/20"
               aria-label="Logout"
             >
               <LogOut className="h-5 w-5" />

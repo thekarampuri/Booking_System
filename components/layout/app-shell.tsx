@@ -15,9 +15,11 @@ export function AppShell({ children, title, subtitle, actions }: AppShellProps) 
   return (
     <div className="min-h-screen">
       <Header />
-      <ReminderBanner />
+      <div className="print:hidden">
+        <ReminderBanner />
+      </div>
       {(title || actions) && (
-        <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 print:hidden">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               {title && (
@@ -29,7 +31,7 @@ export function AppShell({ children, title, subtitle, actions }: AppShellProps) 
           </div>
         </div>
       )}
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 print:m-0 print:max-w-none print:p-0">{children}</main>
     </div>
   );
 }

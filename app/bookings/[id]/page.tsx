@@ -178,6 +178,15 @@ export default function BookingDetailPage() {
             />
             <DetailRow icon={<Clock className="h-4 w-4" />} label="Time" value={formatTime(booking.time)} />
             <DetailRow icon={<User className="h-4 w-4" />} label="Service" value={booking.serviceName} />
+            {Number(booking.sidersCount || 0) > 0 && (
+              <DetailRow
+                icon={<User className="h-4 w-4" />}
+                label="Siders Included"
+                value={`${booking.sidersCount} Sider${Number(booking.sidersCount) > 1 ? 's' : ''}${
+                  booking.sidersPrice ? ` (${formatINR(booking.sidersPrice)})` : ''
+                }`}
+              />
+            )}
             <DetailRow
               icon={<CalendarDays className="h-4 w-4" />}
               label="Occasion Type"

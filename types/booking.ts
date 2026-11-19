@@ -42,6 +42,8 @@ export interface Booking {
   totalAmount: number;
   advanceAmount: number;
   balanceAmount: number;
+  sidersCount?: number;
+  sidersPrice?: number;
   phone?: string;
   notes?: string;
   status: BookingStatus;
@@ -67,6 +69,8 @@ export interface BookingFormValues {
   address: string;
   totalAmount: number;
   advanceAmount: number;
+  sidersCount?: number;
+  sidersPrice?: number;
   phone?: string;
   notes?: string;
   status: BookingStatus;

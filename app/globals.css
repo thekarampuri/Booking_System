@@ -30,6 +30,28 @@
     --chart-5: 27 87% 67%;
     --radius: 1rem;
   }
+
+  .dark {
+    --background: 340 35% 8%;
+    --foreground: 40 40% 95%;
+    --card: 340 30% 12%;
+    --card-foreground: 40 40% 95%;
+    --popover: 340 30% 12%;
+    --popover-foreground: 40 40% 95%;
+    --primary: 40 52% 55%;
+    --primary-foreground: 342 67% 10%;
+    --secondary: 337 40% 22%;
+    --secondary-foreground: 40 47% 96%;
+    --muted: 340 25% 16%;
+    --muted-foreground: 40 20% 68%;
+    --accent: 40 52% 45%;
+    --accent-foreground: 40 47% 96%;
+    --destructive: 0 65% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 340 20% 24%;
+    --input: 340 20% 24%;
+    --ring: 40 52% 55%;
+  }
 }
 
 @layer base {
@@ -48,6 +70,15 @@
       radial-gradient(ellipse 70% 45% at 100% 0%, rgba(204, 159, 64, 0.16) 0px, transparent 50%),
       radial-gradient(ellipse 60% 40% at 50% 110%, rgba(127, 23, 64, 0.08) 0px, transparent 50%);
     background-attachment: fixed;
+  }
+  html.dark body,
+  body.dark,
+  .dark {
+    background-color: #160810;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 8% -10%, rgba(127, 23, 64, 0.3) 0px, transparent 55%),
+      radial-gradient(ellipse 70% 45% at 100% 0%, rgba(204, 159, 64, 0.2) 0px, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 50% 110%, rgba(127, 23, 64, 0.2) 0px, transparent 50%);
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
@@ -68,6 +99,18 @@
       0 8px 32px 0 rgba(127, 23, 64, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.65);
   }
+  .dark .glass {
+    background: linear-gradient(
+      145deg,
+      rgba(36, 12, 24, 0.75) 0%,
+      rgba(22, 7, 15, 0.65) 100%
+    );
+    border: 1px solid rgba(204, 159, 64, 0.2);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
   .glass-strong {
     background: linear-gradient(
       145deg,
@@ -81,6 +124,18 @@
       0 10px 40px 0 rgba(127, 23, 64, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
+  .dark .glass-strong {
+    background: linear-gradient(
+      145deg,
+      rgba(48, 14, 30, 0.85) 0%,
+      rgba(28, 8, 18, 0.8) 100%
+    );
+    border: 1px solid rgba(204, 159, 64, 0.28);
+    box-shadow:
+      0 10px 40px 0 rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
   .glass-maroon {
     background: linear-gradient(
       145deg,
@@ -94,6 +149,15 @@
       0 12px 36px 0 rgba(127, 23, 64, 0.28),
       inset 0 1px 0 rgba(255, 255, 255, 0.18);
   }
+  .dark .glass-maroon {
+    background: linear-gradient(
+      145deg,
+      rgba(100, 16, 48, 0.9) 0%,
+      rgba(55, 6, 28, 0.85) 100%
+    );
+    border: 1px solid rgba(204, 159, 64, 0.35);
+  }
+
   .glass-gold {
     background: linear-gradient(
       145deg,
@@ -106,6 +170,14 @@
     box-shadow:
       0 8px 28px 0 rgba(204, 159, 64, 0.12),
       inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .dark .glass-gold {
+    background: linear-gradient(
+      145deg,
+      rgba(204, 159, 64, 0.15) 0%,
+      rgba(40, 15, 25, 0.6) 100%
+    );
+    border: 1px solid rgba(204, 159, 64, 0.3);
   }
 }
 
@@ -137,26 +209,52 @@
     print-color-adjust: exact !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
-  body * {
-    visibility: hidden;
-  }
-  .printable, .printable * {
-    visibility: visible;
-  }
-  .printable {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-  }
-  .no-print {
+
+  /* Hide app chrome, modals, navigation, toasts, and dialogs */
+  header,
+  nav,
+  aside,
+  footer,
+  .no-print,
+  [role="dialog"],
+  [data-radix-portal],
+  [data-sonner-toaster] {
     display: none !important;
   }
+
+  /* Normal document flow so multi-page receipts naturally paginate across pages */
+  .printable {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .printable * {
+    visibility: visible !important;
+  }
+
+  /* Page break rules for clean pagination */
+  .page-break-inside-avoid,
+  tr,
+  .receipt-header,
+  .receipt-details,
+  .receipt-summary,
+  .receipt-footer,
+  .receipt-notes {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
   /* Prevent browser from automatically appending URL href after links */
   a[href]:after {
     content: none !important;

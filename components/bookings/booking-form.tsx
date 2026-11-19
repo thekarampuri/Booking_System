@@ -16,12 +16,14 @@ import { toast } from 'sonner';
 const schema = z
   .object({
     customerName: z.string().min(1, 'Customer name is required'),
-    serviceName: z.string().min(1, 'Service is required'),
+    serviceName: z.string().min(1, 'Service name is required'),
     bookingDate: z.string().min(1, 'Booking date is required'),
     occasionDate: z.string().min(1, 'Occasion date is required'),
     occasionType: z.string().min(1, 'Occasion type is required'),
     time: z.string().min(1, 'Time is required'),
     address: z.string().min(1, 'Address is required'),
+    sidersCount: z.coerce.number().min(0, 'Must be 0 or more').optional().default(0),
+    sidersPrice: z.coerce.number().min(0, 'Must be 0 or more').optional().default(0),
     totalAmount: z.coerce.number().min(0, 'Must be 0 or more'),
     advanceAmount: z.coerce.number().min(0, 'Must be 0 or more'),
     phone: z.string().optional(),
@@ -55,6 +57,8 @@ export function BookingForm({ booking, prefillDate, mode }: BookingFormProps) {
       occasionType: booking?.occasionType ?? '',
       time: booking?.time ?? '10:00',
       address: booking?.address ?? '',
+      sidersCount: booking?.sidersCount ?? 0,
+      sidersPrice: booking?.sidersPrice ?? 0,
       totalAmount: booking?.totalAmount ?? 0,
       advanceAmount: booking?.advanceAmount ?? 0,
       phone: booking?.phone ?? '',
@@ -142,21 +146,33 @@ export function BookingForm({ booking, prefillDate, mode }: BookingFormProps) {
       <GlassCard variant="strong" className="p-6 animate-fade-in">
         <h3 className="mb-4 font-serif text-lg font-semibold text-maroon">Service & Occasion</h3>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Service" error={errors.serviceName} required>
-            <select {...register('serviceName')} className={selectCls}>
-              <option value="">Select a service</option>
+          <Field label="Service Name" error={errors.serviceName} required>
+            <input
+              type="text"
+              list="service-suggestions"
+              {...register('serviceName')}
+              className={inputCls}
+              placeholder="e.g. Bridal Makeup, Party Makeup"
+            />
+            <datalist id="service-suggestions">
               {SERVICE_TYPES.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s} />
               ))}
-            </select>
+            </datalist>
           </Field>
           <Field label="Occasion Type" error={errors.occasionType} required>
-            <select {...register('occasionType')} className={selectCls}>
-              <option value="">Select occasion</option>
+            <input
+              type="text"
+              list="occasion-suggestions"
+              {...register('occasionType')}
+              className={inputCls}
+              placeholder="e.g. Wedding, Reception, Engagement"
+            />
+            <datalist id="occasion-suggestions">
               {OCCASION_TYPES.map((o) => (
-                <option key={o} value={o}>{o}</option>
+                <option key={o} value={o} />
               ))}
-            </select>
+            </datalist>
           </Field>
           <Field label="Booking Date" error={errors.bookingDate} required>
             <input type="date" {...register('bookingDate')} className={inputCls} />
@@ -194,6 +210,41 @@ export function BookingForm({ booking, prefillDate, mode }: BookingFormProps) {
             </p>
           </div>
         )}
+      </GlassCard>
+
+      {/* Siders / Additional Makeups */}
+      <GlassCard variant="strong" className="p-6 animate-fade-in">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-maroon">Siders / Additional Makeups</h3>
+            <p className="text-xs text-muted-foreground">Add count and total price for extra sider makeups requested with this booking</p>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Number of Siders (Count)" error={errors.sidersCount}>
+            <input
+              type="number"
+              min={0}
+              step="1"
+              {...register('sidersCount')}
+              className={inputCls}
+              placeholder="e.g. 3 (siders count)"
+            />
+          </Field>
+          <Field label="Total Siders Price (₹)" error={errors.sidersPrice}>
+            <input
+              type="number"
+              min={0}
+              step="1"
+              {...register('sidersPrice')}
+              className={inputCls}
+              placeholder="e.g. 4500 (extra charge for siders)"
+            />
+          </Field>
+        </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          * Note: Please make sure the <strong>Total Amount</strong> below reflects the full order amount (Main Service + Siders).
+        </p>
       </GlassCard>
 
       {/* Payment */}

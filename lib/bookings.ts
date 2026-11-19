@@ -45,6 +45,8 @@ function normalize(data: DocumentData, id: string): Booking {
     totalAmount: Number(data.totalAmount ?? 0),
     advanceAmount: Number(data.advanceAmount ?? 0),
     balanceAmount: Number(data.balanceAmount ?? 0),
+    sidersCount: Number(data.sidersCount ?? 0),
+    sidersPrice: Number(data.sidersPrice ?? 0),
     phone: data.phone ?? '',
     notes: data.notes ?? '',
     status: data.status ?? 'upcoming',
